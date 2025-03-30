@@ -2,8 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import Masonry from 'react-masonry-css'
-
-type StyleType = 'anime' | 'lego' | 'minecraft' | 'muppets' | 'rick&morty';
+import { GalleryProps, StyleType, GalleryImage } from '@/types/index'
 
 const galleryImages: Record<StyleType, GalleryImage[]> = {
     anime: Array.from({ length: 19 }, (_, i) => ({
@@ -28,29 +27,16 @@ const galleryImages: Record<StyleType, GalleryImage[]> = {
     }))
 }
 
-// Define image interface
-interface GalleryImage {
-    src: string
-    style?: string
-}
-
-interface GalleryProps {
-    count?: number
-    subtitle?: string
-    animateCount?: boolean
-    images?: GalleryImage[]
-}
-
 const ImageGallery: React.FC<GalleryProps> = ({
     count = 2159,
     subtitle = "Images Chanted",
     animateCount = true,
-    images = galleryImages.anime
+    images = galleryImages.anime,
+    activeStyle,
+    onStyleChange
 }) => {
     const [displayCount, setDisplayCount] = useState(0)
     const [imageData, setImageData] = useState<GalleryImage[]>([])
-    const [activeStyle, setActiveStyle] = useState<StyleType>('anime')
-
     // Animate counter on mount
     useEffect(() => {
         if (animateCount) {
@@ -106,7 +92,7 @@ const ImageGallery: React.FC<GalleryProps> = ({
                 {styles.map((style) => (
                     <button
                         key={style}
-                        onClick={() => setActiveStyle(style)}
+                        onClick={() => onStyleChange(style)}
                         className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                             activeStyle === style
                                 ? 'bg-indigo-500 text-white shadow-lg scale-105'

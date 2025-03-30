@@ -4,7 +4,6 @@ import Avatar02 from "@/public/images/avatar-02.jpg"
 import Avatar03 from "@/public/images/avatar-03.jpg"
 import Avatar04 from "@/public/images/avatar-04.jpg"
 import Avatar05 from "@/public/images/avatar-05.jpg"
-import CustomButton from "@/components/custom-button"
 export default function SubscribeForm() {
     return (
         <>
@@ -72,7 +71,7 @@ export default function SubscribeForm() {
                                 <span className="text-indigo-700 dark:text-gray-200 font-semibold text-xl">
                                     200+
                                 </span>{" "}
-                                Creator have been Chanted
+                                Creators have been Chanted
                             </p>
                         </div>
                     </div>

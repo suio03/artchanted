@@ -1,20 +1,40 @@
 'use client'
 import React, { useState, useRef, DragEvent, ChangeEvent } from 'react'
-import { Upload, TrashIcon } from 'lucide-react'
+import { Upload, Trash2Icon } from 'lucide-react'
 import CustomButton from './custom-button'
-interface ImageUploadProps {
-    maxSizeMB?: number
-    onImageUpload?: (file: File | null) => void
-}
+import ImageCompare from './image-compare'
+import toast from 'react-hot-toast'
+import { ImageUploadProps, StyleType } from '@/types/index'
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
     maxSizeMB = 10,
-    onImageUpload
+    onImageUpload,
+    activeStyle,
+    onStyleChange
 }) => {
     const [image, setImage] = useState<string | null>(null)
     const [isDragging, setIsDragging] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [email, setEmail] = useState('')
     const fileInputRef = useRef<HTMLInputElement>(null)
+
+    // Style preview images mapping
+    const stylePreviews: Record<StyleType, string> = {
+        'anime': '/images/slide/anime-slide.png',
+        'lego': '/images/slide/lego-slide.png',
+        'minecraft': '/images/slide/minecraft-slide.png',
+        'muppets': '/images/slide/muppets-slide.png',
+        'rick&morty': '/images/slide/rick-morty-slide.png'
+    }
+
+    // Style mapping for select element
+    const styleOptions: Record<StyleType, string> = {
+        'anime': 'Anime',
+        'lego': 'Lego',
+        'minecraft': 'Minecraft',
+        'muppets': 'Muppets',
+        'rick&morty': 'Rick & Morty'
+    }
 
     // Convert MB to bytes
     const maxSizeBytes = maxSizeMB * 1024 * 1024
@@ -92,12 +112,83 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         if (onImageUpload) onImageUpload(null)
     }
 
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        return emailRegex.test(email)
+    }
+
+    const handleSubmit = async () => {
+        if (!image) {
+            toast.error('Please upload an image first')
+            return
+        }
+
+        if (!validateEmail(email)) {
+            toast.error('Please enter a valid email address')
+            return
+        }
+
+        try {
+            // First upload the image to R2 and get the imageId
+            const formData = new FormData()
+            formData.append('file', image)
+            formData.append('style', activeStyle)
+
+            const uploadResponse = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+
+            if (!uploadResponse.ok) {
+                throw new Error('Failed to upload image')
+            }
+
+            const { imageId } = await uploadResponse.json()
+
+            // Create Stripe checkout session
+            const checkoutResponse = await fetch('/api/stripe/create-checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID,
+                    mode: 'payment',
+                    successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+                    cancelUrl: `${window.location.origin}/cancel`,
+                    email,
+                    imageId,
+                    style: activeStyle
+                })
+            })
+
+            if (!checkoutResponse.ok) {
+                throw new Error('Failed to create checkout session')
+            }
+
+            const { url } = await checkoutResponse.json()
+            window.location.href = url
+        } catch (error) {
+            console.error('Error:', error)
+            toast.error('Something went wrong. Please try again.')
+        }
+    }
+
     return (
         <>
             <div className="flex flex-col items-center justify-center">
                 <div className="w-full max-w-lg mx-auto p-6 border-2 border-slate-700 rounded-xl bg-white">
-                    <h2 className="text-3xl font-semibold mb-6 text-center">Upload Your Image</h2>
-
+                    <h2 className="text-3xl font-semibold mb-6 text-center">Chanted your photo now</h2>
+                    {(
+                        <div className="my-6">
+                            <ImageCompare
+                                beforeImage="/images/slide/slide01.png"
+                                afterImage={stylePreviews[activeStyle]}
+                                beforeAlt="Your Image"
+                                afterAlt="Style Preview"
+                            />
+                        </div>
+                    )}
                     <div
                         className={`
           border-2 border-dashed rounded-xl p-6 
@@ -105,7 +196,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           bg-gray-50 cursor-pointer
           transition-all duration-200
           ${isDragging ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300'}
-          ${image ? 'h-auto' : 'h-96'}
+          ${image ? 'h-auto' : 'h-48'}
         `}
                         onDragOver={handleDragOver}
                         onDragLeave={handleDragLeave}
@@ -126,7 +217,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                                     }}
                                     className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors"
                                 >
-                                    <TrashIcon className="w-4 h-4" />
+                                    <Trash2Icon className="w-4 h-4" />
                                 </button>
                             </div>
                         ) : (
@@ -152,10 +243,33 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                     {error && (
                         <p className="text-red-500 mt-2">{error}</p>
                     )}
+
+                    {/* Style Selection and Email Input */}
+                    <div className="flex items-center justify-center my-6 gap-4">
+                        <select
+                            value={activeStyle}
+                            onChange={(e) => onStyleChange(e.target.value as StyleType)}
+                            className="w-1/3 border border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        >
+                            {Object.entries(styleOptions).map(([value, label]) => (
+                                <option key={value} value={value}>
+                                    {label}
+                                </option>
+                            ))}
+                        </select>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="your@email.com"
+                            className="w-2/3 border border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            required
+                        />
+                    </div>
+                    <div className="flex justify-center">
+                        <CustomButton onClick={handleSubmit} />
+                    </div>
                 </div>
-            </div>
-            <div className="flex justify-center my-12">
-                <CustomButton disabled={!image} />
             </div>
         </>
     )

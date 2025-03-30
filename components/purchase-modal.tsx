@@ -107,6 +107,14 @@ const PurchaseModal: React.FC<EmailModalProps> = ({
                             </div>
 
                             <form onSubmit={handleSubmit}>
+                                <select className="w-full border border-gray-300 rounded-lg px-4 py-3 mb-6 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option defaultValue="1">Select Style</option>
+                                    <option value="2">Anime</option>
+                                    <option value="3">Lego</option>
+                                    <option value="4">Minecraft</option>
+                                    <option value="5">Muppets</option>
+                                    <option value="6">Rick & Morty</option>
+                                </select>
                                 <input
                                     id="email-input"
                                     type="email"
