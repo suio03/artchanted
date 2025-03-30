@@ -18,10 +18,9 @@ export default function ImageCompare({
     return (
         <div className="flex items-center justify-center gap-4 max-w-md mx-auto">
             <div className="relative w-1/3 aspect-square">
-                <Image
+                <img
                     src={beforeImage}
                     alt={beforeAlt}
-                    fill
                     className="object-cover rounded-lg"
                 />
             </div>
@@ -31,10 +30,9 @@ export default function ImageCompare({
             </div>
 
             <div className="relative w-1/3 aspect-square">
-                <Image
+                <img
                     src={afterImage}
                     alt={afterAlt}
-                    fill
                     className="object-cover rounded-lg"
                 />
             </div>
