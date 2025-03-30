@@ -1,13 +1,12 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
-import Image from 'next/image'
 import Masonry from 'react-masonry-css'
 
 type StyleType = 'anime' | 'lego' | 'minecraft' | 'muppets' | 'rick&morty';
 
 const galleryImages: Record<StyleType, GalleryImage[]> = {
-    anime: Array.from({ length: 22 }, (_, i) => ({
+    anime: Array.from({ length: 19 }, (_, i) => ({
         src: `/images/anime/anime${String(i + 1).padStart(2, '0')}.png`,
         style: 'anime'
     })),
@@ -148,11 +147,9 @@ const ImageGallery: React.FC<GalleryProps> = ({
                         key={index} 
                         className="rounded-lg overflow-hidden shadow-sm"
                     >
-                        <Image
+                        <img
                             src={image.src}
                             alt={`Gallery example ${index + 1}`}
-                            width={400}
-                            height={400}
                             className="w-full h-auto"
                         />
                     </div>

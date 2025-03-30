@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@next/font':
-        specifier: ^14.2.15
-        version: 14.2.15(next@14.2.26(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       '@radix-ui/react-accordion':
         specifier: ^1.2.3
         version: 1.2.3(@types/react-dom@18.3.5(@types/react@18.3.20))(@types/react@18.3.20)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -62,9 +59,6 @@ importers:
       next:
         specifier: ^14.2.5
         version: 14.2.26(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      next-themes:
-        specifier: ^0.4.6
-        version: 0.4.6(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -154,11 +148,6 @@ packages:
 
   '@next/env@14.2.26':
     resolution: {integrity: sha512-vO//GJ/YBco+H7xdQhzJxF7ub3SUwft76jwaeOyVVQFHCi5DCnkP16WHB+JBylo4vOKPoZBlR94Z8xBxNBdNJA==}
-
-  '@next/font@14.2.15':
-    resolution: {integrity: sha512-QopYhBmCDDrNDynbi+ZD1hDZXmQXVFo7TmAFp4DQgO/kogz1OLbQ92hPigJbj572eZ3GaaVxNIyYVn3/eAsehg==}
-    peerDependencies:
-      next: '*'
 
   '@next/swc-darwin-arm64@14.2.26':
     resolution: {integrity: sha512-zDJY8gsKEseGAxG+C2hTMT0w9Nk9N1Sk1qV7vXYz9MEiyRoF5ogQX2+vplyUMIfygnjn9/A04I6yrUTRTuRiyQ==}
@@ -1109,12 +1098,6 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  next-themes@0.4.6:
-    resolution: {integrity: sha512-pZvgD5L0IEvX5/9GWyHMf3m8BKiVQwsCMHfoFosXtXBMnaS0ZnIJ9ST4b4NqLVKDEm8QBxoNNGNaBv2JNF6XNA==}
-    peerDependencies:
-      react: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
-      react-dom: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
-
   next@14.2.26:
     resolution: {integrity: sha512-b81XSLihMwCfwiUVRRja3LphLo4uBBMZEzBBWMaISbKTwOmq3wPknIETy/8000tr7Gq4WmbuFYPS7jOYIf+ZJw==}
     engines: {node: '>=18.17.0'}
@@ -1535,10 +1518,6 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.0
 
   '@next/env@14.2.26': {}
-
-  '@next/font@14.2.15(next@14.2.26(react-dom@18.2.0(react@18.2.0))(react@18.2.0))':
-    dependencies:
-      next: 14.2.26(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
 
   '@next/swc-darwin-arm64@14.2.26':
     optional: true
@@ -2389,11 +2368,6 @@ snapshots:
       thenify-all: 1.6.0
 
   nanoid@3.3.11: {}
-
-  next-themes@0.4.6(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
-    dependencies:
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
 
   next@14.2.26(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
