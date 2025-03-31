@@ -24,7 +24,7 @@ export default function FAQ() {
         },
         {
             question: "Is ChantedArt free to use?",
-            answer: "No, ChantedArt is a paid service. We offer pay-per-image service."
+            answer: "No, ChantedArt is a paid service. We offer pay-per-image service. One image is $3, Three images are $8, and Five images are $12."
         },
         {
             question: "How long does it take to generate an image?",
