@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: *
+Disallow: /_next/
+# Host
+Host: https://artchanted.net/
+
+# Sitemaps
+Sitemap: https://artchanted.net/sitemap.xml
