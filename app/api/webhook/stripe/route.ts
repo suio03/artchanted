@@ -2,36 +2,39 @@ import { NextResponse, NextRequest } from "next/server";
 import { headers } from "next/headers";
 import Stripe from "stripe";
 import { findCheckoutSession } from "@/lib/stripe";
-export const runtime = 'edge';
-export const dynamic = 'force-dynamic';
+import { Resend } from "resend";
+
+export const runtime = "edge";
+export const dynamic = "force-dynamic";
 
 // Initialize Stripe only if the API key is available
 const getStripeClient = () => {
-  const apiKey = process.env.STRIPE_SECRET_KEY;
-  if (!apiKey) {
-    console.warn("Stripe API key not found");
-    return null;
-  }
-  
-  return new Stripe(apiKey, {
-    apiVersion: "2025-02-24.acacia",
-    typescript: true,
-  });
+    const apiKey = process.env.STRIPE_SECRET_KEY;
+    if (!apiKey) {
+        console.warn("Stripe API key not found");
+        return null;
+    }
+
+    return new Stripe(apiKey, {
+        apiVersion: "2025-02-24.acacia",
+        typescript: true,
+    });
 };
 
 // Create stripe client lazily only when needed
 let stripeClient: Stripe | null = null;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
     const body = await req.text();
     const signature = headers().get("stripe-signature");
-    
+
     // Initialize Stripe client if not already done
     if (!stripeClient) {
         stripeClient = getStripeClient();
     }
-    
+
     // If Stripe client couldn't be initialized, return an error
     if (!stripeClient) {
         console.error("Stripe client not initialized - missing API key");
@@ -69,40 +72,39 @@ export async function POST(req: NextRequest) {
                     const email = session?.metadata?.email;
                     const imageId = session?.metadata?.imageId;
                     const style = session?.metadata?.style;
+                    const fileName = session?.metadata?.fileName;
+                    const imageUrl = session?.metadata?.imageUrl;
 
-                    if (!email || !imageId || !style) {
-                        console.error('Missing required metadata:', { email, imageId, style });
-                        break;
-                    }
-
-                    // Store the order in D1
-                    const response = await fetch(`${process.env.WORKER_URL}/api/orders`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${process.env.API_SECRET}`,
-                        },
-                        body: JSON.stringify({
+                    if (!email || !imageId || !style || !fileName || !imageUrl) {
+                        console.error("Missing required metadata:", {
                             email,
                             imageId,
                             style,
-                            stripeSessionId: stripeObject.id,
-                            status: 'pending'
-                        }),
-                    });
-
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('Order creation failed:', {
-                            status: response.status,
-                            statusText: response.statusText,
-                            body: errorText
+                            fileName,
+                            imageUrl
                         });
-                        throw new Error(`Failed to create order: ${response.status} ${response.statusText}`);
+                        break;
                     }
 
+                    // Send email notification with image URL
+                    const emailResponse = await resend.emails.send({
+                        from: "ChantedArt<support@artchanted.net>",
+                        to: process.env.ADMIN_EMAIL || "",
+                        subject: "New ChantedArt Order",
+                        html: `
+                            <h2>New Order Received</h2>
+                            <p><strong>Customer Email:</strong> ${email}</p>
+                            <p><strong>Image ID:</strong> ${imageId}</p>
+                            <p><strong>Style:</strong> ${style}</p>
+                            <p><strong>Stripe Session ID:</strong> ${stripeObject.id}</p>
+                            <p><strong>Amount:</strong> $3.00</p>
+                            <p><strong>Date:</strong> ${new Date().toISOString()}</p>
+                            <p><strong>Image:</strong> <a href="${imageUrl}">View Image</a></p>
+                        `
+                    });
+
                 } catch (error) {
-                    console.error('Error in checkout.session.completed:', error);
+                    console.error("Error in checkout.session.completed:", error);
                 }
                 break;
             }

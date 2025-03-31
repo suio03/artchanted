@@ -1,6 +1,7 @@
 import "./css/style.css"
 import { Toaster } from 'react-hot-toast'
 import { Artifika } from 'next/font/google'
+import Analytics from "@/components/analytics"
 
 // Initialize the Artifika font
 const artifika = Artifika({
@@ -17,6 +18,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" suppressHydrationWarning>
+            <Analytics />
             <body
                 className={`${artifika.variable} font-artifika antialiased bg-indigo-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200 tracking-tight`}
             >

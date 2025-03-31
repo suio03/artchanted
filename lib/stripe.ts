@@ -9,6 +9,8 @@ interface CreateCheckoutParams {
         email: string;
         imageId: string;
         style: string;
+        fileName: string;
+        imageUrl: string;
     };
     user?: {
         email?: string;

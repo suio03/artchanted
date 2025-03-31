@@ -129,23 +129,35 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         }
 
         try {
-            // First upload the image to R2 and get the imageId
-            const formData = new FormData()
-            formData.append('file', image)
-            formData.append('style', activeStyle)
+            // Create a unique image ID
+            const imageId = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`
 
+            // Get the file from the input
+            const file = fileInputRef.current?.files?.[0]
+            if (!file) {
+                throw new Error('No file found')
+            }
+
+            // Upload to R2 first
             const uploadResponse = await fetch('/api/upload', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    imageData: image,
+                    imageId,
+                    fileName: file.name
+                })
             })
 
             if (!uploadResponse.ok) {
                 throw new Error('Failed to upload image')
             }
 
-            const { imageId } = await uploadResponse.json()
-
-            // Create Stripe checkout session
+            const { imageUrl } = await uploadResponse.json()
+            console.log("Image URL:", imageUrl);
+            // Create Stripe checkout session with the R2 URL
             const checkoutResponse = await fetch('/api/stripe/create-checkout', {
                 method: 'POST',
                 headers: {
@@ -154,11 +166,13 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 body: JSON.stringify({
                     priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID,
                     mode: 'payment',
-                    successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-                    cancelUrl: `${window.location.origin}/cancel`,
+                    successUrl: `${window.location.origin}?imageId=${imageId}`,
+                    cancelUrl: `${window.location.origin}`,
                     email,
                     imageId,
-                    style: activeStyle
+                    style: activeStyle,
+                    fileName: file.name,
+                    imageUrl
                 })
             })
 

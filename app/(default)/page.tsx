@@ -1,8 +1,6 @@
 import { SparklesText } from "@/components/magicui/sparkles-text"
 import FAQ from "@/components/faqs"
 import SubscribeForm from "@/components/subscribe-form"
-import ImageUpload from "@/components/uploader"
-import Gallery from "@/components/gallery"
 import HomeContent from "@/components/home-content"
 export default function Home() {
     return (
@@ -17,10 +15,6 @@ export default function Home() {
                         <SubscribeForm />
                     </div>
                     <HomeContent />
-                    {/* <ImageUpload />
-                    <div className="flex justify-center my-12">
-                        <Gallery />
-                    </div> */}
                     <FAQ />
                 </div>
             </div>

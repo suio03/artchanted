@@ -4,13 +4,12 @@ import { createCheckout } from "@/lib/stripe";
 // This function is used to create a Stripe Checkout Session (one-time payment or subscription)
 // It's called by the <ButtonCheckout /> component
 // Users must be authenticated. It will prefill the Checkout data with their email and/or credit card (if any)
-export const runtime = 'edge';
+export const runtime = "edge";
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-
-        const { priceId, mode, successUrl, cancelUrl, email, imageId, style } = body;
-
+        const { mode, successUrl, cancelUrl, email, imageId, style, fileName, imageUrl } = body;
+        const priceId = process.env.STRIPE_PRICE_ID;
         if (!priceId) {
             return NextResponse.json(
                 { error: "Price ID is required" },
@@ -53,7 +52,9 @@ export async function POST(req: NextRequest) {
             metadata: {
                 email,
                 imageId,
-                style
+                style,
+                fileName,
+                imageUrl
             },
             user: {
                 email
