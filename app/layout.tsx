@@ -2,6 +2,8 @@ import "./css/style.css"
 import { Toaster } from 'react-hot-toast'
 import { Artifika } from 'next/font/google'
 import Analytics from "@/components/analytics"
+import Footer from "@/components/ui/footer"
+import Header from "@/components/ui/header"
 
 // Initialize the Artifika font
 const artifika = Artifika({
@@ -23,7 +25,9 @@ export default function RootLayout({
                 className={`${artifika.variable} font-artifika antialiased bg-indigo-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200 tracking-tight`}
             >
                 <div className="relative flex flex-col min-h-screen overflow-hidden supports-[overflow:clip]:overflow-clip">
+                    <Header />
                     {children}
+                    <Footer />
                 </div>
                 <Toaster
                             position="top-center"

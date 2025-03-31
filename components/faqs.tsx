@@ -69,7 +69,7 @@ export default function FAQ() {
     ]
     return (
         <div className="w-full max-w-3xl mx-auto">
-            <h1 className="text-4xl font-bold text-center mb-8">FAQ</h1>
+            <h2 className="text-4xl font-bold text-center mb-8">FAQ</h2>
 
             <Accordion type="single" collapsible className="w-full space-y-4">
                 {faqItems.map((item, index) => (

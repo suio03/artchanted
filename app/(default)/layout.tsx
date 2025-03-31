@@ -1,7 +1,5 @@
 import BgShapes from "@/components/bg-shapes"
 import VerticalLines from "@/components/vertical-lines"
-import Header from "@/components/ui/header"
-import Footer from "@/components/ui/footer"
 
 export const metadata = {
     title: "Turn your photos into Chanted Art | ChantedArt",
@@ -17,11 +15,7 @@ export default function DefaultLayout({
         <>
             <VerticalLines />
             <BgShapes />
-            <Header />
-
             <main className="grow">{children}</main>
-
-            <Footer />
         </>
     )
 }
